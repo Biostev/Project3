@@ -1,30 +1,28 @@
 import datetime
 
-import sqlalchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from .db_session import SqlAlchemyBase
-
+from flask_login import UserMixin
 from flask_wtf import FlaskForm
+from sqlalchemy import Column, Integer, String, DateTime
+from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import PasswordField, StringField, SubmitField, EmailField
 from wtforms.validators import DataRequired
-from flask_login import UserMixin
+
+from .db_session import SqlAlchemyBase
 
 
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True,
-                           autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    email = sqlalchemy.Column(sqlalchemy.String,
-                              index=True,
-                              unique=True,
-                              nullable=False)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    email = Column(String, index=True, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    created_date = Column(DateTime, default=datetime.datetime.now)
+
+    def __init__(self, name: str, email: str, password: str):
+        self.name = name
+        self.email = email
+        self.set_password(password)
 
     def __repr__(self):
         return f'<User> {self.id} {self.name} {self.email}'

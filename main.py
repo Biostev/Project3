@@ -6,9 +6,8 @@ from flask_login import (LoginManager, login_user, login_required,
                          logout_user)
 from data import db_session
 from data.users import User, RegisterForm
-from data.games import Game
 
-from datetime import date
+from DBCreator import init_db
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -33,43 +32,6 @@ def index():
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
-
-
-def init_db():  # test func to initialize db with test users and games
-    db_sess = db_session.create_session()
-
-    user = User()
-    user.name = 'Пользователь 1'
-    user.email = 'email1@email.ru'
-    user.set_password('Password')
-    db_sess.add(user)
-
-    user = User()
-    user.name = 'Пользователь 2'
-    user.email = 'email2@email.ru'
-    user.set_password('Password')
-    db_sess.add(user)
-
-    user = User()
-    user.name = 'Пользователь 3'
-    user.email = 'email3@email.ru'
-    user.set_password('Password')
-    db_sess.add(user)
-
-    user = User()
-    user.name = 'Пользователь 4'
-    user.email = 'email4@email.ru'
-    user.set_password('Password')
-    db_sess.add(user)
-
-    game = Game(name="BioShock",
-                genre="Adventure",
-                company='2K',
-                platform='PC',
-                release_date=date(2010, 12, 5))
-    db_sess.add(game)
-
-    db_sess.commit()
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -122,6 +84,7 @@ def logout():
 
 def main():
     db_session.global_init("db/GameManager.db")
+    # init_db()  # this is used to create db
     app.run()
 
 
