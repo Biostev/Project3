@@ -3,8 +3,8 @@ from sqlalchemy import Column, Integer, String
 from .db_session import SqlAlchemyBase
 
 
-class Genre(SqlAlchemyBase):
-    __tablename__ = 'genres'
+class Company(SqlAlchemyBase):
+    __tablename__ = 'companies'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -14,4 +14,4 @@ class Genre(SqlAlchemyBase):
         self.name = name
 
     def __repr__(self):
-        return f'<Genre> {self.id} {self.name}'
+        return f'<Company> {self.id} {self.name}'

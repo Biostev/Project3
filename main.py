@@ -1,9 +1,12 @@
+import os
+
 from flask import (Flask, render_template, redirect)
+from flask_login import (LoginManager, login_user, login_required,
+                         logout_user, current_user)
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
-from flask_login import (LoginManager, login_user, login_required,
-                         logout_user)
+
 from data import db_session
 from data.users import User, RegisterForm
 
@@ -49,10 +52,11 @@ def register():
                                    form=form,
                                    message="Такой пользователь уже есть")
 
-        user = User()
-        user.name = form.name.data
-        user.email = form.email.data
-        user.set_password(form.password.data)
+        user = User(
+            form.name.data,
+            form.email.data,
+            form.password.data
+        )
         db_sess.add(user)
         db_sess.commit()
 
@@ -72,7 +76,7 @@ def login():
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    return render_template('login.html', title='Authorization', form=form)
 
 
 @app.route('/logout')
@@ -84,8 +88,8 @@ def logout():
 
 def main():
     db_session.global_init("db/GameManager.db")
-    # init_db()  # this is used to create db
-    app.run()
+    init_db()  # this is used to create db
+    # app.run()
 
 
 if __name__ == '__main__':

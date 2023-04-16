@@ -2,7 +2,10 @@ from data import db_session
 from data.games import Game
 from data.users import User
 from data.genres import Genre
+from data.platforms import Platform
+from data.companies import Company
 import datetime
+import api_requests
 
 from faker import Faker
 
@@ -13,59 +16,44 @@ faker_obj = Faker('en_US')
 def init_db():
     db_sess = db_session.create_session()
 
-    users = {}
-    for _ in range(20):
-        password = faker_obj.password()
-        user = User(
-            faker_obj.name(),
-            faker_obj.email(),
-            password
-        )
-        users[user] = password
-        db_sess.add(user)
-
-    db_sess.commit()
-
-    genre_names = ['Adventure', 'Shooter', 'Horror', 'Sandbox', 'RPG', 'Simulator']
-    genres = []
-    for genre_name in genre_names:
-        genre = Genre(genre_name)
-        genres.append(genre)
+    # adding all genres from IGDB
+    genres = api_requests.get_all_genres()
+    for genre_data in genres:
+        genre = Genre(genre_data['id'], genre_data['name'])
         db_sess.add(genre)
+        db_sess.commit()
 
-    platforms = ['PC', 'Xbox', 'PS', 'Switch']
-    names = ['Overwatch', 'League of Legends', 'Valorant',
-             'World of Warcraft', 'cs:go', 'Danganronpa',
-             'Stardew valley', 'Starbound', 'Terraria',
-             'Enter the Gungeon']
-    companies = ['EA', 'Ubisoft', 'Riot Games',
-                 'Warner Bros. Entertainment Inc.', 'Bethesda Softworks', 'Microsoft',
-                 'Rockstar games', 'T2', 'Jages',
-                 'Netherrealm']
-    games = []
-    for _ in range(10):
-        name = faker_obj.random.choice(names)
-        names.remove(name)
-        company = faker_obj.random.choice(companies)
-        companies.remove(company)
-        game = Game(
-            name,
-            company,
-            faker_obj.random.choice(platforms),
-            faker_obj.date_between(
-                datetime.date(2006, 1, 1), datetime.date(2023, 1, 1)
-            ),
-        )
-        games.append(game)
+    # adding all platforms from IGDB
+    platforms = api_requests.get_all_platforms()
+    for platform_data in platforms:
+        platform = Platform(platform_data['id'], platform_data['name'])
+        db_sess.add(platform)
+        db_sess.commit()
+
+    for cur_game in api_requests.get_many_games():
+        game = Game(cur_game['id'],
+                    cur_game['name'],
+                    cur_game['rating'],
+                    datetime.datetime.utcfromtimestamp(cur_game['first_release_date']).date())
+
+        for genre in db_sess.query(Genre).filter(Genre.id in cur_game['genres']):
+            game.genres.append(genre)
+
+        for platform in db_sess.query(Platform).filter(Platform.id in cur_game['platforms']):
+            game.platforms.append(platform)
+
+        companies = api_requests.find_companies(cur_game['involved_companies'])
+        for cur_company in companies:
+            company_in_db = db_sess.query(Company).filter(Company.id == cur_company['id'])
+            if not [i for i in company_in_db]:
+                company = Company(cur_company['id'], cur_company['name'])
+                db_sess.add(company)
+            else:
+                company = db_sess.query(Company).filter(Company.id == cur_company['id']).first()
+            game.companies.append(company)
+
         db_sess.add(game)
-
-    for game in games:
-        for user in users:
-            if faker_obj.random.randint(0, 1):
-                game.users.append(user)
-        for genre in genres:
-            if faker_obj.random.randint(0, 1):
-                game.genres.append(genre)
+        db_sess.commit()
 
     db_sess.commit()
 
