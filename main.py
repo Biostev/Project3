@@ -85,9 +85,10 @@ def edit_profile():
         loaded_avatar = request.files['avatar']
         if loaded_avatar.filename:
             avatar_name = secure_filename(loaded_avatar.filename)
-            loaded_avatar.save(f'uploaded/{avatar_name}')
-            with open(f'uploaded/{avatar_name}', 'rb') as file:
+            loaded_avatar.save(avatar_name)
+            with open(avatar_name, 'rb') as file:
                 avatar = file.read()
+            os.remove(avatar_name)
             user.avatar = avatar
         db_sess.commit()
 
