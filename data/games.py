@@ -49,6 +49,7 @@ class Game(SqlAlchemyBase):
     name = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
     release_date = Column(Date, nullable=False)
+    cover = Column(String, nullable=False)
 
     users = orm.relationship(
         'User', secondary=users_association_table, backref='linked_users'
@@ -67,11 +68,12 @@ class Game(SqlAlchemyBase):
     )
 
     def __init__(self, id: int, name: str,
-                 rating: int, release_date: date):
+                 rating: int, release_date: date, cover: str):
         self.id = id
         self.name = name
         self.rating = rating
         self.release_date = release_date
+        self.cover = cover
 
     def __repr__(self):
         return f'<Game> {self.id} {self.name} {self.release_date}'

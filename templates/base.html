@@ -1,20 +1,22 @@
 <!DOCKTYPE html>
-<hhtml lang="en">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="../static/css/style.css">
-        <title>Games</title>
+        <title>WorldOfGamers</title>
     </head>
     <body>
         <header class="header">
             <div class="container">
                 <div class="header_inner">
-                    <a class="header_logo" href="base.html">
+                    <a class="header_logo" href="/home">
                         <img class="website_logo_icon"
                              src="../static/img/gamepad.png"
                              alt="logo"
                         />
-                        <h1 class="text_logo">Games</h1>
+                        <h1 class="text_logo">World
+                            Of
+                            Gamers</h1>
                     </a>
 
                     <div class="topnav">
@@ -29,7 +31,7 @@
                             <a class="nav_link" href="/profile">{{ current_user.name }}</a>
                         <a class="nav_link" href="/logout">Log out</a>
                         {% else %}
-                            <a class="nav_link " href="/register">Sign in</a>
+                            <a class="nav_link " href="/register">Sign up</a>
                             <a class="nav_link" href="/login">Log in</a>
                         {% endif %}
                     </nav>
@@ -42,4 +44,4 @@
             </div>
         </div>
     </body>
-</hhtml>
+</html>

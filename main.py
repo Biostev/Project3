@@ -11,12 +11,14 @@ from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
+import api_requests
 from data import db_session
 from data.users import User, RegisterForm, EditProfileForm
+from data.games import Game
 
 from werkzeug.utils import secure_filename
 
-# from DBCreator import init_db
+from DBCreator import init_db
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -26,15 +28,23 @@ login_manager.init_app(app)
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Войти')
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me')
+    submit = SubmitField('Log in')
 
 
-@app.route("/")
+@app.route('/')
+@app.route('/home')
 def index():
-    return render_template('index.html')
+    db_sess = db_session.create_session()
+    games = list(db_sess.query(Game).filter(
+        Game.rating >= 80, Game.release_date > datetime.datetime(2023, 1, 1)
+    ).order_by(Game.rating))[:-15:-1]
+    return render_template(
+        'index.html',
+        games=games
+    )
 
 
 @login_manager.user_loader
@@ -171,6 +181,9 @@ def main():
     db_session.global_init("db/GameManager.db")
     # init_db()  # this is used to create db
     app.run()
+
+
+# def get_popular_games():
 
 
 if __name__ == '__main__':

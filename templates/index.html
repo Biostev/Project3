@@ -1,13 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Games</h1>
-{% for game in games%}
-<div class="col-md6 border rounded">
-    <h2>{{game.name}}</h2>
-    <div>
-        {{game.company}}, {{game.release_date}}
-    </div>
-</div>
-{% endfor %}
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css">
+    <link rel="stylesheet" href="../static/css/carousel.css">
+</head>
+<body>
+    <section id="slider">
+        <div class="subcontainer">
+            <div class="slider-wrapper">
+                <div>
+                    <h2>Most popular games</h2>
+                </div>
+                <br>
+                <div class="my-slider">
+                    {% for game in games %}
+                        <div>
+                            <div class="slide">
+                                <div class="game_card">
+                                    <div>
+                                        <img src="{{ game.cover }}">
+                                    </div>
+                                    <div>
+                                        <a href="#">Learn More</a>
+                                        <h3> {{ game.name }} </h3>
+                                        <p> {{ game.rating | round | int}} </p>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script src="../static/js/script.js"></script>
+</body>
 {% endblock %}
