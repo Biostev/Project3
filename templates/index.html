@@ -3,41 +3,55 @@
 {% block content %}
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css">
     <link rel="stylesheet" href="../static/css/carousel.css">
 </head>
 <body>
-    <section id="slider">
-        <div class="subcontainer">
-            <div class="slider-wrapper">
-                <div>
-                    <h2>Most popular games</h2>
-                </div>
-                <br>
-                <div class="my-slider">
-                    {% for game in games %}
-                        <div>
-                            <div class="slide">
-                                <div class="game_card">
-                                    <div>
-                                        <img src="{{ game.cover }}">
-                                    </div>
-                                    <div>
-                                        <a href="#">Learn More</a>
-                                        <h3> {{ game.name }} </h3>
-                                        <p> {{ game.rating | round | int}} </p>
-                                    </div>
-                                </div>
-                                <br>
-                            </div>
+<section id="slider">
+    <div class="subcontainer">
+        <div class="slider-wrapper">
+            <div>
+                <h2> Latest games </h2>
+            </div>
+            <br>
+            <ul class="control" id="custom-control">
+                <li class="prev">
+                    <i class="fas fa-angle-left fa-2x"></i>
+                </li>
+                <li class="next">
+                    <i class="fas fa-angle-right fa-2x"></i>
+                </li>
+            </ul>
+            <div class="my-slider">
+                {% for game in games %}
+                    <a class="game-card" href="/game/{{ game.id }}" tabindex="0">
+                        <div class="game_cover">
+                            <img
+                                    class="img-responsive game-card-image"
+                                    alt="Cover not found"
+                                    itemprop="image"
+                                    src="{{ game.cover }}">
                         </div>
-                    {% endfor %}
-                </div>
+                        <div class="game-card-overlay">
+                            Read<br>More
+                        </div>
+                        <div class="game-card-caption">
+                            <p class="game-card-name">
+                                {{ game.name }}
+                            </p>
+                            <small class="game-card-subtitle">
+                                {{ game.rating | round | int }}%
+                            </small>
+                        </div>
+                    </a>
+                {% endfor %}
             </div>
         </div>
+    </div>
 
-    </section>
+</section>
 
-    <script src="../static/js/script.js"></script>
+<script src="../static/js/script.js"></script>
 </body>
 {% endblock %}

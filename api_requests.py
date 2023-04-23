@@ -74,12 +74,14 @@ def find_companies(ids):
     return response
 
 
-def get_many_games():
+def get_many_games(game_ids):
     endpoint = 'games'
-    query = 'fields id, name, rating, first_release_date, genres, platforms, involved_companies, cover; ' \
+    query = 'fields id, name, rating, first_release_date, genres, ' \
+            'platforms, involved_companies, cover, storyline, summary; ' \
             'limit 50;' \
-            'where id != null & name != null & rating >= 70 & first_release_date != null' \
-            '& genres != null & platforms != null & involved_companies != null;'
+            f'where id != ({",".join(game_ids)}) & name != null & rating >= 70 & first_release_date != null' \
+            '& genres != null & platforms != null & involved_companies != null' \
+            '& storyline != null & summary != null;'
     params = {
         'headers': headers,
         'data': query
@@ -95,10 +97,12 @@ def get_new_games():
     date = int(round(date.timestamp()))
 
     endpoint = 'games'
-    query = 'fields id, name, rating, first_release_date, genres, platforms, involved_companies, cover; ' \
+    query = 'fields id, name, rating, first_release_date, genres, ' \
+            'platforms, involved_companies, cover, storyline, summary; ' \
             'limit 50;' \
             f'where id != null & name != null & rating >= 70 & first_release_date >= {date}' \
-            '& genres != null & platforms != null & involved_companies != null;'
+            '& genres != null & platforms != null & involved_companies != null' \
+            '& storyline != null & summary != null;'
     params = {
         'headers': headers,
         'data': query
@@ -121,6 +125,33 @@ def get_cover_for_game(game_id):
     im_url = f'https://images.igdb.com/igdb/image/upload/t_cover_big/{response}.png'
 
     return im_url
+
+
+def search_game_by_name(name):
+    endpoint = 'games'
+    query = f'search "{name}";' \
+            'fields id, name, rating, first_release_date, genres, ' \
+            'platforms, involved_companies, cover, storyline, summary; '
+    params = {
+        'headers': headers,
+        'data': query
+    }
+    response = requests.post(url + endpoint, **params).json()
+
+    return response
+
+
+def game_arrays(game_id):
+    endpoint = 'games'
+    query = 'fields id, genres, platforms, involved_companies;' \
+            f'where id = {game_id};'
+    params = {
+        'headers': headers,
+        'data': query
+    }
+    response = requests.post(url + endpoint, **params).json()
+
+    return response
 
 
 # pprint(get_all_genres())

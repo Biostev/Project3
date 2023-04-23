@@ -1,38 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form class="user_form" action="" method="post">
-        <h1> Authorization </h1>
-        <br>
-        {{ form.hidden_tag() }}
-        <div>
-            <div  class="info_name">
-                {{ form.email.label }}
-            </div>
-            {{ form.email(class="form-control", type="email") }}<br>
-            {% for error in form.email.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
+<body>
+<form class="user_form" action="" method="post">
+    <h1> Authorization </h1>
+    <br>
+    {{ form.hidden_tag() }}
+    <div>
+        <div  class="info_name">
+            {{ form.email.label }}
         </div>
-        <br>
-        <div>
-            <div  class="info_name">
-                {{ form.password.label }}
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
             </div>
-            {{ form.password(class="form-control", type="password") }}<br>
-            {% for error in form.password.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-            {% endfor %}
+        {% endfor %}
+    </div>
+    <br>
+    <div>
+        <div  class="info_name">
+            {{ form.password.label }}
         </div>
-        <br>
-        <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
-        <br>
-        <div>{{ form.submit(type="submit", class="btn btn-primary") }}</div>
-        <br>
-        <div>{{ message }}</div>
-    </form>
+        {{ form.password(class="form-control", type="password") }}<br>
+        {% for error in form.password.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+    <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
+    <br>
+    <div>{{ form.submit(type="submit", class="btn btn-primary") }}</div>
+    <br>
+    <div>{{ message }}</div>
+</form>
+</body>
 {% endblock %}

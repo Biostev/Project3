@@ -3,6 +3,7 @@ import os
 import base64
 from PIL import Image
 import io
+from math import ceil
 
 from flask import (Flask, render_template, redirect, request)
 from flask_login import (LoginManager, login_user, login_required,
@@ -37,13 +38,43 @@ class LoginForm(FlaskForm):
 @app.route('/')
 @app.route('/home')
 def index():
+    days_to_subtract = 90
+    date = datetime.datetime.today() - datetime.timedelta(days=days_to_subtract)
     db_sess = db_session.create_session()
     games = list(db_sess.query(Game).filter(
-        Game.rating >= 80, Game.release_date > datetime.datetime(2023, 1, 1)
+        Game.release_date > date
     ).order_by(Game.rating))[:-15:-1]
     return render_template(
         'index.html',
         games=games
+    )
+
+
+@app.route('/game/<game_id>')
+def game_page(game_id):
+    db_sess = db_session.create_session()
+    game = db_sess.query(Game).filter(Game.id == game_id)[0]
+    return render_template(
+        'game.html',
+        game=game
+    )
+
+
+@app.route('/all_games/<cur_page>')
+def all_games_page(cur_page):
+    db_sess = db_session.create_session()
+    all_games = db_sess.query(Game).order_by(Game.rating)[::-1]
+    games_per_page = 5
+    cur_page = int(cur_page)
+    total_pages = ceil(len(all_games) / games_per_page)
+    near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
+    return render_template(
+        'all_games.html',
+        games=all_games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
+        near_pages=near_pages,
+        total_pages=total_pages,
+        cur_page=cur_page,
+        games_per_page=games_per_page,
     )
 
 

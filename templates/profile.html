@@ -7,81 +7,85 @@
     <title> Profile </title>
 </head>
 <body>
-    <form class="profile_info" action="" method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
+<form class="profile_info" action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
 
-        <div class="info_section">
-            <h1 class="info_name"> Name </h1>
-            {% if edit_mode %}
-                {{ form.name(class="form-control") }}<br>
-                {% for error in form.name.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            {% else %}
-                <div class="info"> {{ current_user.name }} </div>
-            {% endif %}
-        </div>
-        <br>
-
-        <div class="info_section">
-            <h1 class="info_name"> Email </h1>
-            {% if edit_mode %}
-                {{ form.email(class="form-control", type="email") }}<br>
-                {% for error in form.email.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            {% else %}
-                <div class="info"> {{ current_user.email }} </div>
-            {% endif %}
-        </div>
-        <br>
-
-        {% if not edit_mode %}
-            <div class="info_section">
-                <h1 class="info_name"> Registration date </h1>
-                <div class="info"> {{ date }} </div>
-                <div>You have been with us for {{ days }} days!</div>
-            </div>
-            <br>
-        {% endif %}
-
-        <div class="info_section">
-            <h1 class="info_name"> Avatar </h1>
-            {% if edit_mode %}
-                {{ form.avatar(
-                    class="form-control",
-                    value=current_user.avatar,
-                    type="file") }}<br>
-                {% for error in form.avatar.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-                <br><br>
-            {% else %}
-                <div class="box">
-                    <img src="data:image/png;charset=utf-8;base64,{{ avatar }}" alt="Here should be your avatar">
-                </div>
-            {% endif %}
-        </div>
-        <br><br>
-
+    <div class="info_section">
+        <h1 class="info_name"> Name </h1>
         {% if edit_mode %}
-            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-            <div>{{ message }}</div>
+            {{ form.name(class="form-control") }}<br>
+            {% for error in form.name.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        {% else %}
+            <div class="info"> {{ current_user.name }} </div>
         {% endif %}
+    </div>
+    <br>
 
-        {% if current_user.is_authenticated and not edit_mode %}
-            <div class="info-section">
-                <input type = "button" value="Edit" onclick="window.location.href='profile/edit';">
+    <div class="info_section">
+        <h1 class="info_name"> Email </h1>
+        {% if edit_mode %}
+            {{ form.email(class="form-control", type="email") }}<br>
+            {% for error in form.email.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        {% else %}
+            <div class="info"> {{ current_user.email }} </div>
+        {% endif %}
+    </div>
+    <br>
+
+    {% if not edit_mode %}
+        <div class="info_section">
+            <h1 class="info_name"> Registration date </h1>
+            <div class="info"> {{ date }} </div>
+            {% if days == 1 %}
+                <div>You have been with us for {{ days }} day!</div>
+            {% else %}
+                <div>You have been with us for {{ days }} days!</div>
+            {% endif %}
+        </div>
+        <br>
+    {% endif %}
+
+    <div class="info_section">
+        <h1 class="info_name"> Avatar </h1>
+        {% if edit_mode %}
+            {{ form.avatar(
+                class="form-control",
+                value=current_user.avatar,
+                type="file") }}<br>
+            {% for error in form.avatar.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+            <br><br>
+        {% else %}
+            <div class="box">
+                <img src="data:image/png;charset=utf-8;base64,{{ avatar }}" alt="Here should be your avatar">
             </div>
-            <br>
         {% endif %}
+    </div>
+    <br><br>
 
-    </form>
+    {% if edit_mode %}
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <div>{{ message }}</div>
+    {% endif %}
+
+    {% if current_user.is_authenticated and not edit_mode %}
+        <div class="info-section">
+            <input type = "button" value="Edit" onclick="window.location.href='profile/edit';">
+        </div>
+        <br>
+    {% endif %}
+
+</form>
 </body>
 {% endblock %}

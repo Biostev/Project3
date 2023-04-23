@@ -1,8 +1,13 @@
 let slider = tns({
     container : ".my-slider",
     "slideBy" : "1",
-    "speed" : 1000,
+    "speed" : 1500,
     "nav" : false,
+    controlsPosition: "bottom",
+    navPosition: "bottom",
+    autoplay: true,
+    autoplayButtonOutput: false,
+    controlsContainer: "#custom-control",
     responsive: {
         1600: {
             items : 6,

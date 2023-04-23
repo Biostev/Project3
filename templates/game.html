@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <script src="https://cdn.rawgit.com/LeaVerou/conic-gradient/master/conic-gradient.js"></script>
+    <link rel="stylesheet" href="../static/css/game.css">
+    <link rel="stylesheet" href="../static/css/rating.css">
+    <title> {{ game.name }} </title>
+</head>
+<body>
+<div class="game">
+    <div class="game_cover">
+        <img
+            class="img-responsive game-card-image"
+            alt="Cover not found"
+            itemprop="image"
+            src="{{ game.cover }}">
+    </div>
+    <div class="game_title">
+        {{ game.name }}
+    </div>
+    <div class="game_data">
+        <div class="rating">
+            {{ game.rating | round | int }}%
+        </div>
+        <div class="game_date">
+            {{ game.release_date }}
+        </div>
+    </div>
+    <div class="game_genres">
+        <nobr>
+            <h2> Genres: </h2>
+            {% for genre in game.genres %}
+                <a href="#" tabindex="0">{{ genre.name }}, </a>
+            {% endfor %}
+        </nobr>
+    </div>
+    <div class="game_platforms">
+        <nobr>
+            <h2> Platforms: </h2>
+            {% for platform in game.platforms %}
+                <a href="#" tabindex="0">{{ platform.name }}, </a>
+            {% endfor %}
+        </nobr>
+    </div>
+    <div class="game_companies">
+        <nobr>
+            <h2> Companies: </h2>
+            {% for company in game.companies %}
+                <a href="#" tabindex="0">{{ company.name }}, </a>
+            {% endfor %}
+        </nobr>
+    </div>
+    <div class="game_storyline">
+        <h2> Storyline: </h2>
+        <p> {{ game.storyline }} </p>
+    </div>
+    <div class="game_description">
+        <h2> Description: </h2>
+        <p> {{ game.description }} </p>
+    </div>
+</div>
+<script src="../static/js/rating.js"></script>
+</body>
+{% endblock %}
