@@ -78,7 +78,7 @@ def get_many_games(game_ids):
     endpoint = 'games'
     query = 'fields id, name, rating, first_release_date, genres, ' \
             'platforms, involved_companies, cover, storyline, summary; ' \
-            'limit 50;' \
+            'limit 500;' \
             f'where id != ({",".join(game_ids)}) & name != null & rating >= 70 & first_release_date != null' \
             '& genres != null & platforms != null & involved_companies != null' \
             '& storyline != null & summary != null;'

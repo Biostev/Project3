@@ -7,11 +7,6 @@ from data.companies import Company
 import datetime
 import api_requests
 
-from faker import Faker
-
-
-faker_obj = Faker('en_US')
-
 
 def init_db():
     db_sess = db_session.create_session()
@@ -36,7 +31,6 @@ def init_db():
 
     def add_some_games():
         for cur_game in api_requests.get_many_games(all_game_ids):
-            print(cur_game)
             game = Game(
                 cur_game['id'],
                 cur_game['name'],

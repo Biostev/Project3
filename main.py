@@ -5,17 +5,21 @@ from PIL import Image
 import io
 from math import ceil
 
-from flask import (Flask, render_template, redirect, request)
+from flask import (Flask, render_template, redirect, request, flash)
 from flask_login import (LoginManager, login_user, login_required,
                          logout_user, current_user)
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, SubmitField
+from wtforms import (Form, EmailField, PasswordField, BooleanField,
+                     SubmitField, SelectField, StringField)
 from wtforms.validators import DataRequired
 
 import api_requests
 from data import db_session
 from data.users import User, RegisterForm, EditProfileForm
 from data.games import Game
+from data.genres import Genre
+from data.platforms import Platform
+from data.companies import Company
 
 from werkzeug.utils import secure_filename
 
@@ -46,17 +50,67 @@ def index():
     ).order_by(Game.rating))[:-15:-1]
     return render_template(
         'index.html',
-        games=games
+        games=games,
     )
 
 
-@app.route('/game/<game_id>')
-def game_page(game_id):
+@app.route('/search/genres/<genre_id>/<cur_page>')
+def search_by_genre(genre_id, cur_page):
     db_sess = db_session.create_session()
-    game = db_sess.query(Game).filter(Game.id == game_id)[0]
+    genre = db_sess.query(Genre).filter(Genre.id == genre_id).first()
+    games = db_sess.query(Game).filter(Game.genres.contains(genre)).order_by(Game.rating)[::-1]
+    games_per_page = 5
+    cur_page = int(cur_page)
+    total_pages = ceil(len(games) / games_per_page)
+    near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
-        'game.html',
-        game=game
+        'search_by_genre.html',
+        games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
+        near_pages=near_pages,
+        total_pages=total_pages,
+        cur_page=cur_page,
+        games_per_page=games_per_page,
+        genre=genre,
+    )
+
+
+@app.route('/search/platforms/<platform_id>/<cur_page>')
+def search_by_platform(platform_id, cur_page):
+    db_sess = db_session.create_session()
+    platform = db_sess.query(Platform).filter(Platform.id == platform_id).first()
+    games = db_sess.query(Game).filter(Game.platforms.contains(platform)).order_by(Game.rating)[::-1]
+    games_per_page = 5
+    cur_page = int(cur_page)
+    total_pages = ceil(len(games) / games_per_page)
+    near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
+    return render_template(
+        'search_by_platform.html',
+        games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
+        near_pages=near_pages,
+        total_pages=total_pages,
+        cur_page=cur_page,
+        games_per_page=games_per_page,
+        platform=platform,
+    )
+
+
+@app.route('/search/companies/<company_id>/<cur_page>')
+def search_by_company(company_id, cur_page):
+    db_sess = db_session.create_session()
+    company = db_sess.query(Genre).filter(Company.id == company_id).first()
+    games = db_sess.query(Game).filter(Game.companies.contains(company)).order_by(Game.rating)[::-1]
+    games_per_page = 5
+    cur_page = int(cur_page)
+    total_pages = ceil(len(games) / games_per_page)
+    near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
+    return render_template(
+        'search_by_company.html',
+        games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
+        near_pages=near_pages,
+        total_pages=total_pages,
+        cur_page=cur_page,
+        games_per_page=games_per_page,
+        company=company,
     )
 
 
@@ -78,22 +132,53 @@ def all_games_page(cur_page):
     )
 
 
+@app.route('/all_users/<cur_page>')
+def all_users_page(cur_page):
+    db_sess = db_session.create_session()
+    all_users = db_sess.query(User).order_by(User.created_date)[::-1]
+    users_per_page = 5
+    cur_page = int(cur_page)
+    total_pages = ceil(len(all_users) / users_per_page)
+    near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
+    return render_template(
+        'all_users.html',
+        users=all_users[(cur_page - 1) * users_per_page: cur_page * users_per_page],
+        near_pages=near_pages,
+        total_pages=total_pages,
+        cur_page=cur_page,
+        users_per_page=users_per_page,
+    )
+
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
-@app.route('/profile')
-def profile():
+@app.route('/game/<game_id>')
+def game_page(game_id):
+    db_sess = db_session.create_session()
+    game = db_sess.query(Game).filter(Game.id == game_id)[0]
+    return render_template(
+        'game.html',
+        game=game
+    )
+
+
+@app.route('/profile/<user_id>')
+def profile(user_id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == user_id)[0]
     form = EditProfileForm()
-    date = calculate_date()
-    avatar = make_avatar(current_user)
+    date = calculate_date(user)
+    avatar = make_avatar(user)
     return render_template(
         'profile.html',
         avatar=avatar, date=date[0], days=date[1],
         edit_mode=False,
-        form=form
+        form=form,
+        user=user,
     )
 
 
@@ -103,6 +188,7 @@ def edit_profile():
         name=current_user.name,
         email=current_user.email
     )
+    user = current_user
 
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -133,11 +219,12 @@ def edit_profile():
             user.avatar = avatar
         db_sess.commit()
 
-        return redirect('/profile')
+        return redirect(f'/profile/{current_user.id}')
     return render_template(
         'profile.html', title='Profile edit',
         edit_mode=True,
-        form=form
+        form=form,
+        user=user,
     )
 
 
@@ -190,8 +277,8 @@ def logout():
     return redirect("/")
 
 
-def calculate_date():
-    date = current_user.created_date.date()
+def calculate_date(user):
+    date = user.created_date.date()
 
     end = datetime.datetime.now().date()
 

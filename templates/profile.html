@@ -20,7 +20,7 @@
                 </p>
             {% endfor %}
         {% else %}
-            <div class="info"> {{ current_user.name }} </div>
+            <div class="info"> {{ user.name }} </div>
         {% endif %}
     </div>
     <br>
@@ -35,7 +35,7 @@
                 </p>
             {% endfor %}
         {% else %}
-            <div class="info"> {{ current_user.email }} </div>
+            <div class="info"> {{ user.email }} </div>
         {% endif %}
     </div>
     <br>
@@ -58,7 +58,7 @@
         {% if edit_mode %}
             {{ form.avatar(
                 class="form-control",
-                value=current_user.avatar,
+                value=user.avatar,
                 type="file") }}<br>
             {% for error in form.avatar.errors %}
                 <p class="alert alert-danger" role="alert">
@@ -79,9 +79,9 @@
         <div>{{ message }}</div>
     {% endif %}
 
-    {% if current_user.is_authenticated and not edit_mode %}
+    {% if current_user.id == user.id and not edit_mode %}
         <div class="info-section">
-            <input type = "button" value="Edit" onclick="window.location.href='profile/edit';">
+            <input type = "button" value="Edit" onclick="window.location.href='/profile/edit';">
         </div>
         <br>
     {% endif %}

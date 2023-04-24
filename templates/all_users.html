@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="../static/css/all_data_pages.css">
+    <link rel="stylesheet" href="../static/css/pagination.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title> All users </title>
+</head>
+<body>
+<div class="all_users_field">
+    {% for user in users %}
+        <a class="link" href="/profile/{{ user.id }}" tabindex="0">
+            <div class="field">
+                <div class="info">
+                    <div class="name"> {{ user.name }} </div>
+                </div>
+            </div>
+        </a>
+        <br><br>
+    {% endfor %}
+</div>
+<div class="pagination">
+    {% if cur_page > 1 %}
+        <a href="/all_users/{{ cur_page - 1 }}">&laquo;</a>
+    {% endif %}
+    {% if cur_page - users_per_page > 1 %}
+        <a href="/all_users/1">1</a>
+        <a class="fake" href="#">...</a>
+    {% endif %}
+    {% for page_number in near_pages %}
+        <a href="/all_users/{{ page_number }}"> {{ page_number }} </a>
+    {% endfor %}
+    {% if cur_page + users_per_page + 1 < total_pages %}
+        <a class="fake" href="#">...</a>
+    {% endif %}
+    <a href="/all_users/{{ total_pages }}"> {{ total_pages }} </a>
+    {% if cur_page < total_pages %}
+        <a href="/all_users/{{ cur_page + 1 }}">&raquo;</a>
+    {% endif %}
+</div>
+</body>
+{% endblock %}

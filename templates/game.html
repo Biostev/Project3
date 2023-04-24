@@ -32,7 +32,7 @@
         <nobr>
             <h2> Genres: </h2>
             {% for genre in game.genres %}
-                <a href="#" tabindex="0">{{ genre.name }}, </a>
+                <a href="/search/genres/{{ genre.id }}/1" tabindex="0">{{ genre.name }}, </a>
             {% endfor %}
         </nobr>
     </div>
@@ -40,7 +40,7 @@
         <nobr>
             <h2> Platforms: </h2>
             {% for platform in game.platforms %}
-                <a href="#" tabindex="0">{{ platform.name }}, </a>
+                <a href="/search/platforms/{{ platform.id }}/1" tabindex="0">{{ platform.name }}, </a>
             {% endfor %}
         </nobr>
     </div>
@@ -48,7 +48,7 @@
         <nobr>
             <h2> Companies: </h2>
             {% for company in game.companies %}
-                <a href="#" tabindex="0">{{ company.name }}, </a>
+                <a href="/search/companies/{{ company.id }}/1" tabindex="0">{{ company.name }}, </a>
             {% endfor %}
         </nobr>
     </div>

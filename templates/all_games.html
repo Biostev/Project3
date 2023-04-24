@@ -2,18 +2,19 @@
 
 {% block content %}
 <head>
-    <link rel="stylesheet" href="../static/css/all_games.css">
+    <link rel="stylesheet" href="../static/css/all_data_pages.css">
     <link rel="stylesheet" href="../static/css/pagination.css">
+    <link rel="stylesheet" href="../static/css/style.css">
     <title> All games </title>
 </head>
 <body>
 <div class="all_games_field">
     {% for game in games %}
-        <a class="game-link" href="/game/{{ game.id }}" tabindex="0">
-            <div class="game">
-                <div class="game-info">
+        <a class="link" href="/game/{{ game.id }}" tabindex="0">
+            <div class="field">
+                <div class="info">
                     <div class="rating"> {{ game.rating | round | int }} </div>
-                    <div class="game-name"> {{ game.name }} </div>
+                    <div class="name"> {{ game.name }} </div>
                     <div class="game_date"> {{ game.release_date }} </div>
                 </div>
             </div>
@@ -27,7 +28,9 @@
     {% endif %}
     {% if cur_page - games_per_page > 1 %}
         <a href="/all_games/1">1</a>
+    {% if cur_page - games_per_page - 1 > 1 %}
         <a class="fake" href="#">...</a>
+    {% endif %}
     {% endif %}
     {% for page_number in near_pages %}
         <a href="/all_games/{{ page_number }}"> {{ page_number }} </a>
