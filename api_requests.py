@@ -1,7 +1,5 @@
 import requests
 import os
-from pprint import pprint
-from data.games import Game
 import datetime
 
 token = os.getenv('Website_Token')
@@ -152,10 +150,3 @@ def game_arrays(game_id):
     response = requests.post(url + endpoint, **params).json()
 
     return response
-
-
-# pprint(get_all_genres())
-# pprint(get_all_platforms())
-# pprint(get_all_companies())
-# pprint(get_many_games())
-# pprint(get_cover_for_game(1942))

@@ -1,29 +1,23 @@
+import base64
 import datetime
 import os
-import base64
-from PIL import Image
-import io
 from math import ceil
 
-from flask import (Flask, render_template, redirect, request, flash)
+from flask import (Flask, render_template, redirect, request, url_for)
 from flask_login import (LoginManager, login_user, login_required,
                          logout_user, current_user)
 from flask_wtf import FlaskForm
-from wtforms import (Form, EmailField, PasswordField, BooleanField,
-                     SubmitField, SelectField, StringField)
+from werkzeug.utils import secure_filename
+from wtforms import (EmailField, PasswordField, BooleanField,
+                     SubmitField)
 from wtforms.validators import DataRequired
 
-import api_requests
 from data import db_session
-from data.users import User, RegisterForm, EditProfileForm
+from data.companies import Company
 from data.games import Game
 from data.genres import Genre
 from data.platforms import Platform
-from data.companies import Company
-
-from werkzeug.utils import secure_filename
-
-from DBCreator import init_db
+from data.users import User, RegisterForm, EditProfileForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -50,6 +44,7 @@ def index():
     ).order_by(Game.rating))[:-15:-1]
     return render_template(
         'index.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         games=games,
     )
 
@@ -65,6 +60,10 @@ def search_by_genre(genre_id, cur_page):
     near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
         'search_by_genre.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
+        style1=url_for('static', filename='css/all_data_pages.css'),
+        style2=url_for('static', filename='css/pagination.css'),
+        style3=url_for('static', filename='css/style.css'),
         games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
         near_pages=near_pages,
         total_pages=total_pages,
@@ -85,6 +84,10 @@ def search_by_platform(platform_id, cur_page):
     near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
         'search_by_platform.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
+        style1=url_for('static', filename='css/all_data_pages.css'),
+        style2=url_for('static', filename='css/pagination.css'),
+        style3=url_for('static', filename='css/style.css'),
         games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
         near_pages=near_pages,
         total_pages=total_pages,
@@ -105,6 +108,10 @@ def search_by_company(company_id, cur_page):
     near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
         'search_by_company.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
+        style1=url_for('static', filename='css/all_data_pages.css'),
+        style2=url_for('static', filename='css/pagination.css'),
+        style3=url_for('static', filename='css/style.css'),
         games=games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
         near_pages=near_pages,
         total_pages=total_pages,
@@ -124,6 +131,7 @@ def all_games_page(cur_page):
     near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
         'all_games.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         games=all_games[(cur_page - 1) * games_per_page: cur_page * games_per_page],
         near_pages=near_pages,
         total_pages=total_pages,
@@ -142,6 +150,7 @@ def all_users_page(cur_page):
     near_pages = range(max(1, cur_page - 5), min(cur_page + 6, total_pages))
     return render_template(
         'all_users.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         users=all_users[(cur_page - 1) * users_per_page: cur_page * users_per_page],
         near_pages=near_pages,
         total_pages=total_pages,
@@ -162,6 +171,7 @@ def game_page(game_id):
     game = db_sess.query(Game).filter(Game.id == game_id)[0]
     return render_template(
         'game.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         game=game
     )
 
@@ -175,6 +185,7 @@ def profile(user_id):
     avatar = make_avatar(user)
     return render_template(
         'profile.html',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         avatar=avatar, date=date[0], days=date[1],
         edit_mode=False,
         form=form,
@@ -222,6 +233,7 @@ def edit_profile():
         return redirect(f'/profile/{current_user.id}')
     return render_template(
         'profile.html', title='Profile edit',
+        logo_img=url_for('static', filename='img/gamepad.png'),
         edit_mode=True,
         form=form,
         user=user,
@@ -252,7 +264,10 @@ def register():
         db_sess.commit()
 
         return redirect('/login')
-    return render_template('register.html', title='Registry', form=form)
+    return render_template(
+        'register.html', title='Registry', form=form,
+        logo_img=url_for('static', filename='img/gamepad.png'),
+    )
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -267,7 +282,10 @@ def login():
         return render_template('login.html',
                                message="Invalid login or password",
                                form=form)
-    return render_template('login.html', title='Authorization', form=form)
+    return render_template(
+        'login.html', title='Authorization', form=form,
+        logo_img=url_for('static', filename='img/gamepad.png'),
+    )
 
 
 @app.route('/logout')
@@ -297,11 +315,7 @@ def make_avatar(user):
 
 def main():
     db_session.global_init("db/GameManager.db")
-    # init_db()  # this is used to create db
-    app.run()
-
-
-# def get_popular_games():
+    app.run(host='127.0.0.1', port=3128)
 
 
 if __name__ == '__main__':
